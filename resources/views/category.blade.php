@@ -1,53 +1,43 @@
 @extends('layout')
 @section('title', 'Главная страница')
 @section('content')
-<script
-    src="https://code.jquery.com/jquery-3.7.0.min.js"
-    integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
-    crossorigin="anonymous">
-</script>
 <div class="menu">
     <div class="container menu__container">
         <div class="catalog">
             <div class="catalog__wrapper">
                 <div class="catalog__header"><span>Категории</span><i class="catalog__header-icon"></i></div>
                 <ul class="catalog__list">
-                    @foreach ($categories as $category)
                     <li class="catalog__item">
-
                         <a href="/category/{{ $category->id }}" class="catalog__link">
                             <img src="{{ $category->icon }}" alt="Desktops" class="catalog__link-img">
                             {{ $category->name }}
                         </a>
                         <div class="catalog__subCatalog">
-                            @foreach($products as $product)
-                                 @if ($category->id === $product->category_id )
-                                    <div class="catalog__subCatalog__item">
-                                        <div class="product catalog__product">
-                                            <img src="{{ $product->image }}" alt="" class="product__img">
-                                            <div class="product__content">
-                                                <h3 class="product__title">{{ $product->name }}</h3>
-                                                <p class="product__description">{{ $product->weight }} грамм </p>
-                                            </div>
-                                            <footer class="product__footer">
-                                                <div class="product__bottom">
-                                                    <div class="product__price">
-                                                        <span class="product__price-value">{{ $product->price }}</span>
-                                                        <span class="product__currency">&#8381;</span>
-                                                    </div>
-                                                    <form class="my-form" action="/addToCart" method="POST" id="quantity">
-                                                        <input type="hidden" name="productId" value={{ $product->id }}>
-                                                        <button class="btn product__btn" type="submit" form="quantity" value={{ $product->id }}>В корзину</button>
-                                                    </form>
-                                                </div>
-                                            </footer>
-                                        </div>
+                            @foreach($products as $product):
+                            <div class="catalog__subCatalog__item">
+                                <div class="product catalog__product">
+                                    <img src="{{ $product->image }}" alt="" class="product__img">
+                                    <div class="product__content">
+                                        <h3 class="product__title">{{ $product->name }}</h3>
+                                        <p class="product__description">{{ $product->weight }} грамм </p>
                                     </div>
-                                @endif
+                                    <footer class="product__footer">
+                                        <div class="product__bottom">
+                                            <div class="product__price">
+                                                <span class="product__price-value">{{ $product->price }}</span>
+                                                <span class="product__currency">&#8381;</span>
+                                            </div>
+                                            <form class="my-form" action="/addToCart" method="POST" id="quantity">
+                                                <input type="hidden" name="productId" value={{ $product->id }}>
+                                                <button class="btn product__btn" type="submit" form="quantity" value={{ $product->id }}>В корзину</button>
+                                            </form>
+                                        </div>
+                                    </footer>
+                                </div>
+                            </div>
                             @endforeach
                         </div>
                     </li>
-                    @endforeach
                 </ul>
             </div>
         </div>
@@ -58,9 +48,10 @@
         </nav>
         <a href="tel:+99999999999" class="menu__phone"><i class="fa fa-phone menu__phone-icon"></i> <span class="menu__phone-span">Call us:</span> +9 999 99 999 99</a>
     </div>
-</div>
 
+</div>
 <div class="slider">
+
     <div class="container">
         <div class="slider__wrapper">
             <div class="slider__carousel">
@@ -72,25 +63,14 @@
                         <a href="/" class="slider__carousel_button">More</a>
                     </div>
                 </div>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('.my-form button').click(function (){
-            var productId = $(this).parent().find("[name='productId']").attr('value');
-            $.post( "/addToCart", {productId: productId}, function( data ) {
-                document.getElementById("qty").innerHTML = 'Продуктов в корзине ' + data;
-            });
-            return false;
-        });
-    });
-</script>
-
-
-
-
 <style>
     .menu {
         height: 60px;
@@ -158,7 +138,7 @@
     .catalog__list {
         position: relative;
         z-index: 2;
-        visibility: hidden;
+        visibility: visible;
     }
     .catalog__link {
         height: 60px;
@@ -180,8 +160,8 @@
         flex-wrap: wrap;
         background-color: white;
         position: absolute;
-        opacity: 0;
-        visibility: hidden;
+        opacity: 1;
+        visibility: visible;
         left: 280px;
         top: 0;
         height: 501px;

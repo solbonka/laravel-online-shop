@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\SignInRequest;
-use App\Http\Requests\SignupRequest;
+use App\Http\Requests\SignUpRequest;
 use App\Models\User;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -15,7 +17,7 @@ class UserController extends Controller
     {
         return view('signup');
     }
-    public function postSignUp(SignupRequest $request)
+    public function postSignUp(SignUpRequest $request)
     {
         $user = User::create([
             'lastname' =>$request->lastname,
@@ -31,15 +33,16 @@ class UserController extends Controller
         return view('signin');
     }
 
+    /**
+     * @throws ValidationException
+     */
     public function postSignIn(SignInRequest $request)
     {
-        if (!Auth::attempt($request->validated())){
-            return back()
-                ->withInput()
-                ->withErrors([
-                    'email'=>'Неверный email или пароль'
-                ]);
+        if (!Auth::attempt($request->validated())) {
+            throw ValidationException::withMessages([
+                'email' => 'Неверный email или пароль'
+            ]);
         }
-        return redirect()->route('welcome');
+        return redirect()->intended(RouteServiceProvider::HOME);
     }
 }
