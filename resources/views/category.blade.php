@@ -13,7 +13,7 @@
                             {{ $category->name }}
                         </a>
                         <div class="catalog__subCatalog">
-                            @foreach($products as $product):
+                            @foreach($category->products as $product):
                             <div class="catalog__subCatalog__item">
                                 <div class="product catalog__product">
                                     <img src="{{ $product->image }}" alt="" class="product__img">
