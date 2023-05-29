@@ -9,7 +9,7 @@
 <body>
 <header class="header">
     <div class="container">
-        <a href="/home" class="logo" title="Магаз">
+        <a href="{{ route('home') }}" class="logo" title="Магаз">
             <img src="https://sun9-73.userapi.com/impg/LlFhCCrFlSL8QcXqaRntpXbQX62ACsGZs67_xA/f3DVgs-F0FE.jpg?size=219x99&quality=96&sign=daf3d997d0003d7fc156922d9d3f19c1&type=album" alt="Logo">
         </a>
         <div class="header-right">
@@ -21,9 +21,9 @@
             </form>
             <div class="cart-informer">
                 <button onclick="document.location='/cart'" class="cart-informer__button">
-                    <span class="cart-informer__count" id="smallQty"></span>
+                    <span class="cart-informer__count" id="smallQty">@yield('quantitySum')</span>
                     <span class="cart-informer__icon"></span>
-                    <span class="cart-informer__value">Сумма</span>
+                    <span class="cart-informer__value">@yield('total')</span>
                     <i class="fa fa-chevron-down cart-informer__i"></i>
                 </button>
             </div>
@@ -37,7 +37,7 @@
 <!-- END -->
 
 <footer>
-    По-братски скиньте бабок на мороженое
+    Мой магазин мороженого
 </footer>
 
 </body>
@@ -48,6 +48,10 @@
         padding: 5px;
         background-color: #abbaba;
         color: #004;
+        position:fixed;
+        bottom: 0;
+        height:30px;
+        width:100%;
     }
     /* NEW */
 

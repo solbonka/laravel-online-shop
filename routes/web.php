@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -26,3 +27,6 @@ Route::get('/signin', [UserController::class, 'signin'])->middleware('guest')->n
 Route::post('/signin', [UserController::class, 'postSignIn'])->middleware('guest');
 Route::get('/home', [MainController::class, 'main'])->middleware('auth')->name('home');
 Route::get('/category/{categoryId}', [MainController::class, 'category'])->middleware('auth')->name('{categoryId}');
+Route::get('/cart', [CartController::class, 'cart'])->middleware('auth')->name('cart');
+Route::post('/add', [CartController::class, 'add'])->middleware('auth')->name('add');
+Route::post('/remove', [CartController::class, 'remove'])->middleware('auth')->name('remove');

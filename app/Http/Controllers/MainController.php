@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Product;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class MainController extends Controller
 {
@@ -17,16 +16,18 @@ class MainController extends Controller
     {
         $this->middleware('auth');
     }
-
-
     public function main()
     {
+        $user = Auth::user();
+        $cart = $user->cart()->first();
         $categories = Category::get();
-        return view('home', compact('categories'));
+        return view('home', compact('categories', 'cart'));
     }
     public function category($categoryId)
     {
+        $user = Auth::user();
+        $cart = $user->cart()->first();
         $category = Category::where('id', $categoryId)->first();
-        return view('category',compact('category'));
+        return view('category',compact('category', 'cart'));
     }
 }

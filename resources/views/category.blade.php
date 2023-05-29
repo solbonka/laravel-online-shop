@@ -1,5 +1,12 @@
 @extends('layout')
-@section('title', 'Главная страница')
+@section('title', $category->name)
+@if ($cart)
+    @section('quantitySum', $cart->getSum())
+    @section('total', $cart->getTotal())
+@else
+    @section('quantitySum', '')
+    @section('total', '')
+@endif
 @section('content')
 <div class="menu">
     <div class="container menu__container">
@@ -10,7 +17,7 @@
                     <li class="catalog__item">
                         <a href="/category/{{ $category->id }}" class="catalog__link">
                             <img src="{{ $category->icon }}" alt="Desktops" class="catalog__link-img">
-                            {{ $category->name }}
+                            {{ $category->name }} ({{ $category->products->count() }})
                         </a>
                         <div class="catalog__subCatalog">
                             @foreach($category->products as $product):
@@ -21,18 +28,19 @@
                                         <h3 class="product__title">{{ $product->name }}</h3>
                                         <p class="product__description">{{ $product->weight }} грамм </p>
                                     </div>
-                                    <footer class="product__footer">
+                                    <div class="product__footer">
                                         <div class="product__bottom">
                                             <div class="product__price">
                                                 <span class="product__price-value">{{ $product->price }}</span>
                                                 <span class="product__currency">&#8381;</span>
                                             </div>
-                                            <form class="my-form" action="/addToCart" method="POST" id="quantity">
+                                            <form action="{{ route('add') }}" method="POST" id="{{ $product->id }}">
+                                                @csrf
                                                 <input type="hidden" name="productId" value={{ $product->id }}>
-                                                <button class="btn product__btn" type="submit" form="quantity" value={{ $product->id }}>В корзину</button>
+                                                <button class="btn product__btn" type="submit" form="{{ $product->id }}" value={{ $product->id }}>В корзину</button>
                                             </form>
                                         </div>
-                                    </footer>
+                                    </div>
                                 </div>
                             </div>
                             @endforeach
@@ -248,6 +256,7 @@
 
 
     .product__price {
+        padding-left: 15px;
         font-family: 'Montserrat', sans-serif;
         font-size: 22px;
         font-weight: 900;
@@ -265,10 +274,10 @@
     }
 
     .product__btn {
+        margin-right: 10px;
         box-shadow: none;
         background: crimson;
         width: 150px;
-        padding: 14px 20px;
     }
 
     .product__btn:hover {

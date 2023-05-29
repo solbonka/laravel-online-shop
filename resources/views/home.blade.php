@@ -1,13 +1,17 @@
 @extends('layout')
 @section('title', 'Главная страница')
+@if ($cart)
+    @section('quantitySum', $cart->getSum())
+    @section('total', $cart->getTotal())
+@else
+    @section('quantitySum', '')
+    @section('total', '')
+@endif
 @section('content')
-<script
-    src="https://code.jquery.com/jquery-3.7.0.min.js"
-    integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
-    crossorigin="anonymous">
-</script>
+
 <div class="menu">
     <div class="container menu__container">
+
         <div class="catalog">
             <div class="catalog__wrapper">
                 <div class="catalog__header"><span>Категории</span><i class="catalog__header-icon"></i></div>
@@ -17,7 +21,7 @@
 
                         <a href="/category/{{ $category->id }}" class="catalog__link">
                             <img src="{{ $category->icon }}" alt="Desktops" class="catalog__link-img">
-                            {{ $category->name }}
+                            {{ $category->name }}  ({{ $category->products->count() }})
                         </a>
                         <div class="catalog__subCatalog">
                             @foreach($category->products as $product)
@@ -29,18 +33,21 @@
                                                 <h3 class="product__title">{{ $product->name }}</h3>
                                                 <p class="product__description">{{ $product->weight }} грамм </p>
                                             </div>
-                                            <footer class="product__footer">
+                                            <div class="product__footer">
                                                 <div class="product__bottom">
                                                     <div class="product__price">
                                                         <span class="product__price-value">{{ $product->price }}</span>
                                                         <span class="product__currency">&#8381;</span>
                                                     </div>
-                                                    <form class="my-form" action="/addToCart" method="POST" id="quantity">
+
+                                                    <form action="{{ route('add') }}" method="POST" id="{{ $product->id }}">
+                                                        @csrf
                                                         <input type="hidden" name="productId" value={{ $product->id }}>
-                                                        <button class="btn product__btn" type="submit" form="quantity" value={{ $product->id }}>В корзину</button>
+                                                        <button class="btn product__btn" type="submit" form="{{ $product->id }}" value={{ $product->id }}>В корзину</button>
                                                     </form>
+
                                                 </div>
-                                            </footer>
+                                            </div>
                                         </div>
                                     </div>
                                 @endif
@@ -76,17 +83,7 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('.my-form button').click(function (){
-            var productId = $(this).parent().find("[name='productId']").attr('value');
-            $.post( "/addToCart", {productId: productId}, function( data ) {
-                document.getElementById("qty").innerHTML = 'Продуктов в корзине ' + data;
-            });
-            return false;
-        });
-    });
-</script>
+
 
 
 
@@ -267,17 +264,18 @@
     }
 
 
-    .product__price {
-        font-family: 'Montserrat', sans-serif;
-        font-size: 22px;
-        font-weight: 900;
-    }
     .product__footer{
         background: gold;
         border-bottom-left-radius: 25px;
         border-bottom-right-radius: 25px;
     }
 
+    .product__price {
+        padding-left: 15px;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 22px;
+        font-weight: 900;
+    }
     .product__bottom {
         display: flex;
         align-items: center;
@@ -288,7 +286,7 @@
         box-shadow: none;
         background: crimson;
         width: 150px;
-        padding: 14px 20px;
+        margin-right: 10px;
     }
 
     .product__btn:hover {
