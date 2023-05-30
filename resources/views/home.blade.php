@@ -1,14 +1,20 @@
 @extends('layout')
 @section('title', 'Главная страница')
 @if ($cart)
+    @if ($cart->getSum() !== 0)
     @section('quantitySum', $cart->getSum())
     @section('total', $cart->getTotal())
+    @endif
 @else
     @section('quantitySum', '')
     @section('total', '')
 @endif
 @section('content')
-
+<script
+        src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
+        crossorigin="anonymous">
+</script>
 <div class="menu">
     <div class="container menu__container">
 
@@ -18,7 +24,6 @@
                 <ul class="catalog__list">
                     @foreach ($categories as $category)
                     <li class="catalog__item">
-
                         <a href="/category/{{ $category->id }}" class="catalog__link">
                             <img src="{{ $category->icon }}" alt="Desktops" class="catalog__link-img">
                             {{ $category->name }}  ({{ $category->products->count() }})
@@ -39,16 +44,16 @@
                                                         <span class="product__price-value">{{ $product->price }}</span>
                                                         <span class="product__currency">&#8381;</span>
                                                     </div>
-
-                                                    <form action="{{ route('add') }}" method="POST" id="{{ $product->id }}">
+                                                    <form class="add-form" action="{{ route('add') }}" method="POST" id="add{{ $product->id }}">
                                                         @csrf
                                                         <input type="hidden" name="productId" value={{ $product->id }}>
-                                                        <button class="btn product__btn" type="submit" form="{{ $product->id }}" value={{ $product->id }}>В корзину</button>
+                                                        <button class="btn product__btn" type="submit" form="add{{ $product->id }}" value={{ $product->id }}>В корзину</button>
                                                     </form>
 
                                                 </div>
                                             </div>
                                         </div>
+
                                     </div>
                                 @endif
                             @endforeach
@@ -59,11 +64,15 @@
             </div>
         </div>
         <nav class="menu__nav">
-            <a href="/" class="menu__nav-link">My Account</a>
-            <a href="/" class="menu__nav-link">Wish List</a>
-            <a href="/" class="menu__nav-link">Shopping Cart</a>
+            <a href="/" class="menu__nav-link">Продуктов в корзине:</a>
+            <a href="/" class="menu__nav-link" id="quantitySum"> @if($cart && $cart->getSum() !== 0)
+                    {{ $cart->getSum() }}@endif </a>
+            <a href="/" class="menu__nav-link" id="total">Общая сумма : @if($cart && $cart->getSum() !== 0)
+                    {{ $cart->getTotal() }}@endif</a>
         </nav>
-        <a href="tel:+99999999999" class="menu__phone"><i class="fa fa-phone menu__phone-icon"></i> <span class="menu__phone-span">Call us:</span> +9 999 99 999 99</a>
+        <a href="tel:+99999999999" class="menu__phone"><i class="fa fa-phone menu__phone-icon"></i>
+            <span class="menu__phone-span">Call us:</span> +9 999 99 999 99</a>
+
     </div>
 </div>
 
@@ -71,6 +80,7 @@
     <div class="container">
         <div class="slider__wrapper">
             <div class="slider__carousel">
+
                 <div class="slider__carousel_item">
                     <div class="slider__carousel_desc">
                         <p class="slider__carousel_desc-title">Мороженое</p>
@@ -83,8 +93,28 @@
         </div>
     </div>
 </div>
-
-
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.add-form button').click(function (){
+            var productId = $(this).parent().find("[name='productId']").attr('value');
+            $.ajax({
+                url: "{{ route('add') }}",
+                data: {productId: productId},
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                success: (data) => {
+                    console.log(data);
+                    let inputData = JSON.parse(data);
+                    document.getElementById("total").innerHTML='Общая сумма : ' + inputData.totalSum +' &#8381';
+                    document.getElementById("quantitySum").innerHTML=inputData.quantitySum;
+                }
+            });
+            return false;
+        });
+    });
+</script>
 
 
 

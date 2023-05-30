@@ -13,18 +13,19 @@ class Cart extends Model
     {
         return $this->belongsTo(User::class);
     }
+    public function cartProduct()
+    {
+        return $this->belongsTo(CartProduct::class);
+    }
     public function products()
     {
         return $this->belongsToMany(Product::class)->withPivot('quantity');
     }
-    public function getTotal()
+    public function getTotal(): float|int
     {
         $sum=0;
         foreach($this->products as $product){
             $sum +=  $product->price * $product->pivot->quantity;
-        }
-        if ($sum===0){
-            return '';
         }
         return $sum;
     }
@@ -33,9 +34,6 @@ class Cart extends Model
         $sum=0;
         foreach($this->products as $product){
             $sum +=  $product->pivot->quantity;
-        }
-        if ($sum===0){
-            return '';
         }
         return $sum;
     }

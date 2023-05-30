@@ -7,42 +7,63 @@ use Illuminate\Support\Facades\Auth;
 
 class CartController extends Controller
 {
-    public function cart()
+    public function cart(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         $user = Auth::user();
         $cart = $user->cart()->first();
         return view('cart', compact('cart'));
     }
-    public function add(Request $request)
+    public function add(Request $request):string
     {
         $user = Auth::user();
         $cart = $user->cart()->firstOrCreate(['user_id' => $user->id]);
-        if ($cart->products->contains($request->productId)){
-            $quantityRow = $cart->products()->where('product_id', $request->productId)->first()->pivot;
-            $quantityRow->quantity++;
-            $quantityRow->update();
+        $productId = $request->productId;
+        if ($cart->products->contains($productId)){
+            $product = $cart->products()->where('product_id', $productId)->first();
+            $cartProduct = $product->pivot;
+            $cartProduct->quantity++;
+            $cartProduct->update();
+            $quantity = $cartProduct->quantity;
+            $priceSum = $product->getPriceSum();
         }
         else{
-            $cart->products()->attach($request->productId);
+            $cart->products()->attach($productId);
+            $product = $cart->products()->where('product_id', $productId)->first();
+            $cartProduct = $product->pivot;
+            $quantity = $cartProduct->quantity;
+            $priceSum = $product->price;
         }
+        $quantitySum = $cart->getSum()+1;
+        $totalSum = $cart->getTotal()+$product->price;
 
-        return redirect()->route('cart');
+
+        return json_encode(compact('totalSum', 'quantitySum', 'priceSum', 'quantity', 'cartProduct'));
+
     }
-    public function remove(Request $request)
+    public function remove(Request $request): bool|string
     {
         $user = Auth::user();
         $cart = $user->cart()->first();
-        if ($cart->products->contains($request->productId)){
-            $quantityRow = $cart->products()->where('product_id', $request->productId)->first()->pivot;
-            if ($quantityRow->quantity <= 1){
-                $cart->products()->detach($request->productId);
+        $productId = $request->productId;
+        $product = $cart->products()->where('product_id', $productId)->first();
+        $quantity = 0;
+        if ($cart->products->contains($productId)){
+            $cartProduct = $product->pivot;
+            if ($cartProduct->quantity < 2){
+                $cart->products()->detach($productId);
+                $cartProduct=null;
             }
             else{
-                $quantityRow->quantity--;
-                $quantityRow->update();
+                $cartProduct->quantity--;
+                $cartProduct->update();
+                $quantity = $cartProduct->quantity;
             }
         }
 
-        return redirect()->route('cart');
+        $quantitySum = $cart->getSum()-1;
+        $priceSum = $product->getPriceSum();
+        $totalSum = $cart->getTotal()-$product->price;
+
+        return json_encode(compact('totalSum', 'quantitySum', 'priceSum', 'quantity', 'cartProduct'));
     }
 }

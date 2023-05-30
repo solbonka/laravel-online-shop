@@ -1,8 +1,8 @@
 @extends('layout')
 @section('title', 'Корзина')
-@if ($cart)
-    @section('quantitySum', $cart->getSum())
-    @section('total', $cart->getTotal())
+@if ($cart && $cart->getSum() !== 0)
+        @section('quantitySum', $cart->getSum())
+        @section('total', $cart->getTotal())
 @else
     @section('quantitySum', '')
     @section('total', '')
@@ -12,17 +12,17 @@
     <div class="shopping-cart">
         <!-- Title -->
         @if(empty($cart) || empty($cart->products()->first()->id))
-            <div class="title">
+            <div class="title" id="title">
                 Корзина пуста
             </div>
 
         @else
-        <div class="title">
+        <div class="title" id="title">
             Корзина
         </div>
 
         @foreach($cart->products as $product)
-        <div class="item">
+        <div class="item" id="item{{ $product->id }}">
             <div class="buttons">
                 <span class="delete-btn"></span>
                 <span class="like-btn"></span>
@@ -39,31 +39,90 @@
             </div>
 
             <div class="quantity">
-                <form action="{{ route('add') }}" method="POST" id="add{{ $product->id }}">
+                <form class="add-form" action="{{ route('add') }}" method="POST" id="add{{ $product->id }}">
                     <input type="hidden" name="productId" value={{ $product->id }}>
                     <button class="plus-btn" type="submit" name="button" form="add{{ $product->id }}" >+</button>
                     @csrf
                 </form>
                 <label>
-                    <input type="text" name="name" value={{ $product->pivot->quantity }}>
+                    <span id="qty{{ $product->id }}">{{ $product->pivot->quantity }}</span>
                 </label>
-                <form action="{{ route('remove') }}" method="POST" id="remove{{ $product->id }}">
+                <form class="remove-form" action="{{ route('remove') }}" method="POST" id="remove{{ $product->id }}">
                     <input type="hidden" name="productId" value={{ $product->id }}>
                     <button class="minus-btn" type="submit" name="button" form="remove{{ $product->id }}" >-</button>
                     @csrf
                 </form>
             </div>
-            <div class="sum">
-                Стоимость {{ $product->price * $product->pivot->quantity }} &#8381
+            <div class="priceSum">
+                <span id="{{ $product->id }}">
+                Стоимость {{ $product->getPriceSum() }} &#8381
+                </span>
             </div>
         </div>
         @endforeach
-            <div class="total">
+            <div class="total" id="total">
+                <span id="totalSpan">
                 Общая сумма : {{ $cart->getTotal() }} &#8381
+                </span>
             </div>
         @endif
     </div>
-
+<script
+        src="https://code.jquery.com/jquery-3.7.0.min.js"
+        integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g="
+        crossorigin="anonymous">
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.add-form button').click(function (){
+            var productId = $(this).parent().find("[name='productId']").attr('value');
+            $.ajax({
+                url: "{{ route('add') }}",
+                data: {productId: productId},
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                success: (data) => {
+                    console.log(data);
+                    let inputData = JSON.parse(data);
+                    document.getElementById("totalSpan").innerHTML='Общая сумма : ' + inputData.totalSum +' &#8381';
+                    document.getElementById(productId).innerHTML='Стоимость :' + inputData.priceSum +' &#8381';
+                    document.getElementById('qty' + productId).innerHTML=inputData.quantity;
+                }
+            });
+            return false;
+        });
+    });
+    $(document).ready(function () {
+        $('.remove-form button').click(function (){
+            var productId = $(this).parent().find("[name='productId']").attr('value');
+            $.ajax({
+                url: "{{ route('remove') }}",
+                data: {productId: productId},
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                type: "POST",
+                success: (data) => {
+                    console.log(data);
+                    let inputData = JSON.parse(data);
+                    document.getElementById("totalSpan").innerHTML='Общая сумма : ' + inputData.totalSum +' &#8381';
+                    document.getElementById(productId).innerHTML='Стоимость :' + inputData.priceSum + ' &#8381';
+                    document.getElementById('qty' + productId).innerHTML=inputData.quantity;
+                    if (inputData.quantity == 0) {
+                        document.getElementById('item' + productId).remove();
+                    }
+                    if (inputData.quantitySum == 0) {
+                        document.getElementById('total').remove();
+                        document.getElementById('title').innerHTML = 'Корзина пуста';
+                    }
+                }
+            });
+            return false;
+        });
+    });
+</script>
 <style>
     * {
         box-sizing: border-box;
@@ -158,7 +217,7 @@
         padding-top: 20px;
         margin-right: 60px;
     }
-    .quantity input {
+    .quantity span {
         -webkit-appearance: none;
         border: none;
         text-align: center;
@@ -199,7 +258,7 @@
         height: 90%;
         width: auto;
     }
-    .sum {
+    .priceSum {
         padding-top: 25px;
     }
 
