@@ -11,19 +11,13 @@ class Product extends Model
     public function category(){
         return $this->belongsTo(Category::class);
     }
-    public function cartProduct()
+    public function cartProducts()
     {
-        return $this->belongsTo(CartProduct::class);
+        return $this->hasMany(CartProduct::class);
     }
     public function carts()
     {
-        return $this->belongsToMany(Cart::class)->withPivot('quantity');
+        return $this->belongsToMany(Cart::class)->using(CartProduct::class);
     }
-    public function getPriceSum()
-    {
-        if (!is_null($this->pivot)){
-            return $this->pivot->quantity * $this->price;
-        }
-        return $this->price;
-    }
+
 }

@@ -2,8 +2,8 @@
 @section('title', 'Главная страница')
 @if ($cart)
     @if ($cart->getSum() !== 0)
-    @section('quantitySum', $cart->getSum())
-    @section('total', $cart->getTotal())
+        @section('quantitySum', $cart->getSum())
+        @section('total', $cart->getTotal())
     @endif
 @else
     @section('quantitySum', '')
@@ -65,13 +65,13 @@
         </div>
         <nav class="menu__nav">
             <a href="/" class="menu__nav-link">Продуктов в корзине:</a>
-            <a href="/" class="menu__nav-link" id="quantitySum"> @if($cart && $cart->getSum() !== 0)
-                    {{ $cart->getSum() }}@endif </a>
+            <a href="/" class="menu__nav-link" id="quantitySum">@if($cart && $cart->getSum() !== 0)
+                    {{ $cart->getSum() }}@endif</a>
             <a href="/" class="menu__nav-link" id="total">Общая сумма : @if($cart && $cart->getSum() !== 0)
-                    {{ $cart->getTotal() }}@endif</a>
+                    {{ $cart->getTotal() }}@endif &#8381</a>
         </nav>
         <a href="tel:+99999999999" class="menu__phone"><i class="fa fa-phone menu__phone-icon"></i>
-            <span class="menu__phone-span">Call us:</span> +9 999 99 999 99</a>
+            <span class="menu__phone-span">Call us: </span> +9 999 99 999 99</a>
 
     </div>
 </div>

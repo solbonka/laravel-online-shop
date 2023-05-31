@@ -1,8 +1,10 @@
 @extends('layout')
 @section('title', 'Корзина')
-@if ($cart && $cart->getSum() !== 0)
+@if ($cart)
+    @if ($cart->getSum() !== 0)
         @section('quantitySum', $cart->getSum())
         @section('total', $cart->getTotal())
+    @endif
 @else
     @section('quantitySum', '')
     @section('total', '')
@@ -10,52 +12,52 @@
 @section('content')
 
     <div class="shopping-cart">
-        <!-- Title -->
-        @if(empty($cart) || empty($cart->products()->first()->id))
+        @if(empty($cart) || empty($cartProducts))
             <div class="title" id="title">
                 Корзина пуста
             </div>
 
         @else
-        <div class="title" id="title">
-            Корзина
-        </div>
+            <div class="title" id="title">
+                Корзина
+            </div>
 
-        @foreach($cart->products as $product)
-        <div class="item" id="item{{ $product->id }}">
+
+        @foreach($cartProducts as $cartProduct)
+        <div class="item" id="item{{ $cartProduct->product->id }}">
             <div class="buttons">
                 <span class="delete-btn"></span>
                 <span class="like-btn"></span>
             </div>
 
             <div class="image">
-                <img src="{{ $product->image }}" alt="" />
+                <img src="{{ $cartProduct->product->image }}" alt="" />
             </div>
 
             <div class="description">
-                <span>{{ $product->name }}</span>
-                <span>{{ $product->weight }} грамм</span>
-                <span>{{ $product->price }} &#8381</span>
+                <span>{{ $cartProduct->product->name }}</span>
+                <span>{{ $cartProduct->product->weight }} грамм</span>
+                <span>{{ $cartProduct->product->price }} &#8381</span>
             </div>
 
             <div class="quantity">
-                <form class="add-form" action="{{ route('add') }}" method="POST" id="add{{ $product->id }}">
-                    <input type="hidden" name="productId" value={{ $product->id }}>
-                    <button class="plus-btn" type="submit" name="button" form="add{{ $product->id }}" >+</button>
+                <form class="add-form" action="{{ route('add') }}" method="POST" id="add{{ $cartProduct->product->id }}">
+                    <input type="hidden" name="productId" value={{ $cartProduct->product->id }}>
+                    <button class="plus-btn" type="submit" name="button" form="add{{ $cartProduct->product->id }}" >+</button>
                     @csrf
                 </form>
                 <label>
-                    <span id="qty{{ $product->id }}">{{ $product->pivot->quantity }}</span>
+                    <span id="qty{{ $cartProduct->product->id }}">{{ $cartProduct->quantity }}</span>
                 </label>
-                <form class="remove-form" action="{{ route('remove') }}" method="POST" id="remove{{ $product->id }}">
-                    <input type="hidden" name="productId" value={{ $product->id }}>
-                    <button class="minus-btn" type="submit" name="button" form="remove{{ $product->id }}" >-</button>
+                <form class="remove-form" action="{{ route('remove') }}" method="POST" id="remove{{ $cartProduct->product->id }}">
+                    <input type="hidden" name="productId" value={{ $cartProduct->product->id }}>
+                    <button class="minus-btn" type="submit" name="button" form="remove{{ $cartProduct->product->id }}" >-</button>
                     @csrf
                 </form>
             </div>
             <div class="priceSum">
-                <span id="{{ $product->id }}">
-                Стоимость {{ $product->getPriceSum() }} &#8381
+                <span id="{{ $cartProduct->product->id }}">
+                Стоимость {{ $cartProduct->product->price * $cartProduct->quantity }} &#8381
                 </span>
             </div>
         </div>
@@ -87,7 +89,7 @@
                     console.log(data);
                     let inputData = JSON.parse(data);
                     document.getElementById("totalSpan").innerHTML='Общая сумма : ' + inputData.totalSum +' &#8381';
-                    document.getElementById(productId).innerHTML='Стоимость :' + inputData.priceSum +' &#8381';
+                    document.getElementById(productId).innerHTML='Стоимость ' + inputData.priceSum +' &#8381';
                     document.getElementById('qty' + productId).innerHTML=inputData.quantity;
                 }
             });
@@ -139,7 +141,7 @@
 
     .shopping-cart {
         width: 750px;
-        max-height: 450px;
+        max-height: 418px;
         margin: auto;
         background: #FFFFFF;
         box-shadow: 1px 2px 3px 0 rgba(0, 0, 0, 0.10);
