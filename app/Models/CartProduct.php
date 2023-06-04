@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CartProduct extends Model
 {
+    protected $primaryKey = null;
     public $incrementing = false;
     protected $fillable = [
         'cart_id',
@@ -27,6 +28,6 @@ class CartProduct extends Model
         if (!is_null($this)){
             return $this->quantity * $this->product->price;
         }
-        return $this->product->price;
+        return 0;
     }
 }

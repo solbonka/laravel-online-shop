@@ -1,10 +1,8 @@
 @extends('layout')
 @section('title', 'Корзина')
-@if ($cart)
-    @if ($cart->getSum() !== 0)
+@if ($cart && $cart->getSum() !== 0)
         @section('quantitySum', $cart->getSum())
         @section('total', $cart->getTotal())
-    @endif
 @else
     @section('quantitySum', '')
     @section('total', '')
@@ -12,7 +10,7 @@
 @section('content')
 
     <div class="shopping-cart">
-        @if(empty($cart) || empty($cartProducts))
+        @if(empty($cart) || empty($cartProducts->first()))
             <div class="title" id="title">
                 Корзина пуста
             </div>
@@ -57,7 +55,7 @@
             </div>
             <div class="priceSum">
                 <span id="{{ $cartProduct->product->id }}">
-                Стоимость {{ $cartProduct->product->price * $cartProduct->quantity }} &#8381
+                Стоимость : {{ $cartProduct->product->price * $cartProduct->quantity }} &#8381
                 </span>
             </div>
         </div>
@@ -89,7 +87,7 @@
                     console.log(data);
                     let inputData = JSON.parse(data);
                     document.getElementById("totalSpan").innerHTML='Общая сумма : ' + inputData.totalSum +' &#8381';
-                    document.getElementById(productId).innerHTML='Стоимость ' + inputData.priceSum +' &#8381';
+                    document.getElementById(productId).innerHTML='Стоимость : ' + inputData.priceSum +' &#8381';
                     document.getElementById('qty' + productId).innerHTML=inputData.quantity;
                 }
             });
@@ -110,7 +108,7 @@
                     console.log(data);
                     let inputData = JSON.parse(data);
                     document.getElementById("totalSpan").innerHTML='Общая сумма : ' + inputData.totalSum +' &#8381';
-                    document.getElementById(productId).innerHTML='Стоимость :' + inputData.priceSum + ' &#8381';
+                    document.getElementById(productId).innerHTML='Стоимость : ' + inputData.priceSum + ' &#8381';
                     document.getElementById('qty' + productId).innerHTML=inputData.quantity;
                     if (inputData.quantity == 0) {
                         document.getElementById('item' + productId).remove();

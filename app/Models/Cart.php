@@ -24,9 +24,9 @@ class Cart extends Model
     public function getTotal(): float|int
     {
         $sum=0;
-        foreach($this->cartProducts as $cartProduct){
-            $sum +=  $cartProduct->product->price * $cartProduct->quantity;
-        }
+            foreach ($this->cartProducts as $cartProduct) {
+                $sum += $cartProduct->product->price * $cartProduct->quantity;
+            }
         return $sum;
     }
     public function getSum()
@@ -37,5 +37,13 @@ class Cart extends Model
         }
         return $sum;
     }
-
+    public function getCartProduct($productId): ?CartProduct
+    {
+        foreach ($this->cartProducts as $cartProduct){
+            if ($cartProduct->product_id === $productId){
+                return $cartProduct;
+            }
+        }
+        return null;
+    }
 }

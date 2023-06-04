@@ -1,10 +1,8 @@
 @extends('layout')
 @section('title', 'Главная страница')
-@if ($cart)
-    @if ($cart->getSum() !== 0)
-        @section('quantitySum', $cart->getSum())
-        @section('total', $cart->getTotal())
-    @endif
+@if ($cart && $cart->getSum() !== 0)
+    @section('quantitySum', $cart->getSum())
+    @section('total', $cart->getTotal())
 @else
     @section('quantitySum', '')
     @section('total', '')
@@ -66,9 +64,9 @@
         <nav class="menu__nav">
             <a href="/" class="menu__nav-link">Продуктов в корзине:</a>
             <a href="/" class="menu__nav-link" id="quantitySum">@if($cart && $cart->getSum() !== 0)
-                    {{ $cart->getSum() }}@endif</a>
+                    {{ $cart->getSum() }} @else 0 @endif</a>
             <a href="/" class="menu__nav-link" id="total">Общая сумма : @if($cart && $cart->getSum() !== 0)
-                    {{ $cart->getTotal() }}@endif &#8381</a>
+                    {{ $cart->getTotal() }} @else 0 @endif &#8381</a>
         </nav>
         <a href="tel:+99999999999" class="menu__phone"><i class="fa fa-phone menu__phone-icon"></i>
             <span class="menu__phone-span">Call us: </span> +9 999 99 999 99</a>
@@ -86,7 +84,7 @@
                         <p class="slider__carousel_desc-title">Мороженое</p>
                         <p class="slider__carousel_desc-text">Очень вкусное</p>
                         <p class="slider__carousel_desc-text">Любят все</p>
-                        <a href="/" class="slider__carousel_button">More</a>
+                        <a href="/home" class="slider__carousel_button">More</a>
                     </div>
                 </div>
             </div>

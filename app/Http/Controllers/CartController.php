@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\addProductUpdateEvent;
+use App\Events\removeProductUpdateEvent;
 use App\Models\CartProduct;
-use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -21,19 +22,19 @@ class CartController extends Controller
         $user = Auth::user();
         $productId = $request->productId;
         $cart = $user->cart()->firstOrCreate(['user_id' => $user->id]);
-        $cartProduct = CartProduct::where('cart_id', $cart->id)->where('product_id', $productId)->get()->first();
+        $cartProduct = $cart->cartProducts()->where('product_id', $productId)->first();
         if ($cartProduct){
-            CartProduct::where('cart_id', $cart->id)->where('product_id', $productId)->update(['quantity' => $cartProduct->quantity + 1]);
+            event(new addProductUpdateEvent($cartProduct));
         }
         else{
             CartProduct::create(['cart_id' => $cart->id, 'product_id' => $productId, 'quantity' => 1,]);
         }
-        $cartProduct = CartProduct::where('cart_id', $cart->id)->where('product_id', $productId)->get()->first();
+        $cartProduct = $cart->cartProducts()->where('product_id', $productId)->first();
         $quantity = $cartProduct->quantity;
         $priceSum = $cartProduct->getPriceSum();
         $totalSum = $cart->getTotal();
         $quantitySum = $cart->getSum();
-        return json_encode(compact('priceSum', 'quantity','totalSum','quantitySum'));
+        return json_encode(compact('totalSum', 'quantitySum', 'priceSum', 'quantity'));
 
     }
     public function remove(Request $request): bool|string
@@ -41,26 +42,23 @@ class CartController extends Controller
         $user = Auth::user();
         $cart = $user->cart()->first();
         $productId = $request->productId;
-        $quantity = 0;
-        $priceSum = 0;
-        $cartProduct = CartProduct::where('cart_id', $cart->id)->where('product_id', $productId)->get()->first();
-        if ($cartProduct){
-            if ($cartProduct->quantity > 1){
-                CartProduct::where('cart_id', $cart->id)->where('product_id', $productId)->update(['quantity' => $cartProduct->quantity - 1]);
-                $cartProduct = CartProduct::where('cart_id', $cart->id)->where('product_id', $productId)->get()->first();
-                $quantity = $cartProduct->quantity;
-                $priceSum = $cartProduct->getPriceSum();
-            }
-            else{
-                CartProduct::where('cart_id', $cart->id)->where('product_id', $productId)->delete();
-
-            }
+        $cartProduct = $cart->cartProducts()->where('product_id', $productId)->first();
+        if ($cartProduct->quantity > 1){
+            event(new removeProductUpdateEvent($cartProduct));
         }
-
-
+        else{
+            CartProduct::where('cart_id', $cart->id)->where('product_id', $productId)->delete();
+        }
+        $cartProduct = $cart->cartProducts()->where('product_id', $productId)->first();
+        if (!$cartProduct) {
+            $quantity = 0;
+            $priceSum = 0;
+        } else {
+            $quantity = $cartProduct->quantity;
+            $priceSum = $cartProduct->getPriceSum();
+        }
         $totalSum = $cart->getTotal();
         $quantitySum = $cart->getSum();
-
         return json_encode(compact('totalSum', 'quantitySum', 'priceSum', 'quantity'));
     }
 }
