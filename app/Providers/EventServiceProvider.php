@@ -2,14 +2,11 @@
 
 namespace App\Providers;
 
-use App\Events\addProductUpdateEvent;
-use App\Events\removeProductUpdateEvent;
-use App\Listeners\addProductUpdateListener;
-use App\Listeners\removeProductUpdateListener;
+use App\Events\cartProductUpdateEvent;
+use App\Listeners\cartProductUpdateListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use Illuminate\Support\Facades\Event;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -22,11 +19,8 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        addProductUpdateEvent::class => [
-            addProductUpdateListener::class,
-        ],
-        removeProductUpdateEvent::class => [
-            removeProductUpdateListener::class,
+        cartProductUpdateEvent::class => [
+            cartProductUpdateListener::class,
         ],
     ];
 

@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CartProduct;
 use App\Models\Category;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
 
 class MainController extends Controller
@@ -17,14 +19,19 @@ class MainController extends Controller
     {
         $this->middleware('auth');
     }
-    public function main(): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
+
+    /**
+     * @return Factory|View|Application
+     */
+    public function main(): Factory|View|Application
     {
         $user = Auth::user();
         $cart = $user->cart()->first();
         $categories = Category::get();
         return view('home', compact('categories', 'cart'));
     }
-    public function category($categoryId): \Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
+
+    public function category($categoryId): Factory|View|Application
     {
         $user = Auth::user();
         $cart = $user->cart()->first();

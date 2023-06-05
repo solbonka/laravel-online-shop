@@ -39,11 +39,6 @@ class Cart extends Model
     }
     public function getCartProduct($productId): ?CartProduct
     {
-        foreach ($this->cartProducts as $cartProduct){
-            if ($cartProduct->product_id === $productId){
-                return $cartProduct;
-            }
-        }
-        return null;
+        return $this->cartProducts()->where('product_id', $productId)->first();
     }
 }

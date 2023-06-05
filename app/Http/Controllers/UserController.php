@@ -17,6 +17,7 @@ class UserController extends Controller
     {
         return view('signup');
     }
+
     public function postSignUp(SignUpRequest $request)
     {
         $user = User::create([
@@ -29,7 +30,9 @@ class UserController extends Controller
         Auth::login($user);
         return redirect()->route('home');
     }
-    public function signin(){
+
+    public function signin()
+    {
         return view('signin');
     }
 

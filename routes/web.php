@@ -21,12 +21,23 @@ Route::get('/welcome', function () {
 })->name('welcome');
 
 
-Route::get('/signup', [UserController::class, 'signup'])->middleware('guest')->name('signup');
-Route::post('/signup', [UserController::class, 'postSignUp'])->middleware('guest');
-Route::get('/signin', [UserController::class, 'signin'])->middleware('guest')->name('signin');
-Route::post('/signin', [UserController::class, 'postSignIn'])->middleware('guest');
-Route::get('/home', [MainController::class, 'main'])->middleware('auth')->name('home');
-Route::get('/category/{categoryId}', [MainController::class, 'category'])->middleware('auth')->name('{categoryId}');
-Route::get('/cart', [CartController::class, 'cart'])->middleware('auth')->name('cart');
-Route::post('/add', [CartController::class, 'add'])->middleware('auth')->name('add');
-Route::post('/remove', [CartController::class, 'remove'])->middleware('auth')->name('remove');
+Route::middleware('guest')->group(function(){
+    Route::controller(UserController::class)->group(function() {
+        Route::get('/signup', 'signup')->name('signup');
+        Route::get('/signin', 'signin')->name('signin');
+        Route::post('/signup', 'postSignUp');
+        Route::post('/signin', 'postSignIn');
+    });
+});
+
+Route::middleware('auth')->group(function(){
+    Route::controller(MainController::class)->group(function() {
+        Route::get('/home', 'main')->name('home');
+        Route::get('/category/{categoryId}', 'category')->name('{categoryId}');
+    });
+    Route::controller(CartController::class)->group(function() {
+        Route::get('/cart', 'cart')->name('cart');
+        Route::post('/add', 'add')->name('add');
+        Route::post('/remove', 'remove')->name('remove');
+    });
+});

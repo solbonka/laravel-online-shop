@@ -29,7 +29,7 @@
             </div>
 
             <div class="image">
-                <img src="{{ $cartProduct->product->image }}" alt="" />
+                <img src="{{ $cartProduct->product->image_pass }}" alt="" />
             </div>
 
             <div class="description">
@@ -215,7 +215,7 @@
     }
     .quantity {
         padding-top: 20px;
-        margin-right: 60px;
+        margin-right: 50px;
     }
     .quantity span {
         -webkit-appearance: none;

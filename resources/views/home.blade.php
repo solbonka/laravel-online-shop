@@ -23,7 +23,7 @@
                     @foreach ($categories as $category)
                     <li class="catalog__item">
                         <a href="/category/{{ $category->id }}" class="catalog__link">
-                            <img src="{{ $category->icon }}" alt="Desktops" class="catalog__link-img">
+                            <img src="{{ $category->icon_pass }}" alt="Desktops" class="catalog__link-img">
                             {{ $category->name }}  ({{ $category->products->count() }})
                         </a>
                         <div class="catalog__subCatalog">
@@ -31,7 +31,7 @@
                                  @if ($category->id === $product->category_id )
                                     <div class="catalog__subCatalog__item">
                                         <div class="product catalog__product">
-                                            <img src="{{ $product->image }}" alt="" class="product__img">
+                                            <img src="{{ $product->image_pass }}" alt="" class="product__img">
                                             <div class="product__content">
                                                 <h3 class="product__title">{{ $product->name }}</h3>
                                                 <p class="product__description">{{ $product->weight }} грамм </p>
