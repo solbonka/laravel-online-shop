@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Events\cartProductUpdateEvent;
-use App\Listeners\cartProductUpdateListener;
+use App\Events\CartProductSavingEvent;
+use App\Listeners\DeleteCartProductListener;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -19,8 +19,8 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        cartProductUpdateEvent::class => [
-            cartProductUpdateListener::class,
+        CartProductSavingEvent::class => [
+            DeleteCartProductListener::class,
         ],
     ];
 
