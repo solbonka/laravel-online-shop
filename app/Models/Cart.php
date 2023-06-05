@@ -9,18 +9,22 @@ class Cart extends Model
 {
     protected $fillable = ['user_id'];
     use HasFactory;
+
     public function user()
     {
         return $this->belongsTo(User::class);
     }
+
     public function cartProducts()
     {
         return $this->hasMany(CartProduct::class);
     }
+
     public function products()
     {
         return $this->belongsToMany(Product::class)->using(CartProduct::class);
     }
+
     public function getTotal(): float|int
     {
         $sum=0;
@@ -29,6 +33,7 @@ class Cart extends Model
             }
         return $sum;
     }
+
     public function getSum()
     {
         $sum=0;
@@ -37,7 +42,8 @@ class Cart extends Model
         }
         return $sum;
     }
-    public function getCartProduct($productId): ?CartProduct
+
+    public function getCartProduct(int $productId): ?CartProduct
     {
         return $this->cartProducts()->where('product_id', $productId)->first();
     }

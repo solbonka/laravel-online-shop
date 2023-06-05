@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\cartProductUpdateEvent;
+use App\Events\CartProductSavingEvent;
 use App\Http\Requests\ProductRequest;
+use App\Models\Cart;
 use App\Models\CartProduct;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -26,38 +27,39 @@ class CartController extends Controller
     public function add(ProductRequest $request):string
     {
         $user = Auth::user();
+
         $productId = (int) $request->productId;
+
         $cart = $user->cart()->firstOrCreate(['user_id' => $user->id]);
+
         $cartProduct = CartProduct::create($cart->id, $productId);
-        $quantity = $cartProduct->quantity;
-        $priceSum = $cartProduct->getPriceSum();
-        $totalSum = $cart->getTotal();
-        $quantitySum = $cart->getSum();
-        return json_encode(compact('totalSum', 'quantitySum', 'priceSum', 'quantity'));
+
+        return json_encode([
+            'quantity'    => $cartProduct->quantity,
+            'priceSum'    => $cartProduct->getPriceSum(),
+            'totalSum'    => $cart->getTotal(),
+            'quantitySum' => $cart->getSum(),
+        ]);
     }
 
     public function remove(ProductRequest $request): bool|string
     {
         $user = Auth::user();
         $productId = $request->productId;
+
+        /** @var Cart $cart */
         $cart = $user->cart()->first();
         $cartProduct = $cart->getCartProduct($productId);
-        if ($cartProduct->quantity > 1){
-            event(new cartProductUpdateEvent($cartProduct));
-        }
-        else{
-            CartProduct::where('cart_id', $cart->id)->where('product_id', $productId)->delete();
-        }
-        $cartProduct = $cart->getCartProduct($productId);
-        if (!$cartProduct) {
-            $quantity = 0;
-            $priceSum = 0;
-        } else {
-            $quantity = $cartProduct->quantity;
-            $priceSum = $cartProduct->getPriceSum();
-        }
-        $totalSum = $cart->getTotal();
-        $quantitySum = $cart->getSum();
-        return json_encode(compact('totalSum', 'quantitySum', 'priceSum', 'quantity'));
+
+        $cartProduct->quantity--;
+
+        $cartProduct->save();
+
+        return json_encode([
+            'quantity'    => $cartProduct->quantity,
+            'priceSum'    => $cartProduct->getPriceSum(),
+            'totalSum'    => $cart->getTotal(),
+            'quantitySum' => $cart->getSum(),
+        ]);
     }
 }

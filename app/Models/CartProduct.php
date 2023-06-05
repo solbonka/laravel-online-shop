@@ -2,12 +2,15 @@
 
 namespace App\Models;
 
+use App\Events\CartProductSavingEvent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
 class CartProduct extends Model
 {
+    use HasFactory;
+
     protected $primaryKey = null;
     public $incrementing = false;
     protected $fillable = [
@@ -15,7 +18,10 @@ class CartProduct extends Model
         'product_id',
         'quantity'
     ];
-    use HasFactory;
+
+    protected $dispatchesEvents = [
+        'saving' => CartProductSavingEvent::class
+    ];
 
     public function carts()
     {
@@ -29,20 +35,18 @@ class CartProduct extends Model
 
     public static function create(int $cartId, int $productId)
     {
-        DB::select("
-                INSERT INTO cart_products (cart_id, product_id)
+        DB::select(
+            "INSERT INTO cart_products (cart_id, product_id)
                 VALUES ($cartId, $productId)
                 ON CONFLICT (cart_id, product_id)
-                DO UPDATE SET quantity = cart_products.quantity+1");
+                DO UPDATE SET quantity = cart_products.quantity+1"
+        );
         return CartProduct::where('cart_id', $cartId)->where('product_id', $productId)->first();
     }
 
 
     public function getPriceSum()
     {
-        if (!is_null($this)){
-            return $this->quantity * $this->product->price;
-        }
-        return 0;
+        return $this->quantity * $this->product->price;
     }
 }
