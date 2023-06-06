@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 class CartController extends Controller
 {
     private CartService $cartService;
+
     public function __construct(CartService $cartService)
     {
         $this->cartService = $cartService;
@@ -36,8 +37,8 @@ class CartController extends Controller
         return json_encode([
             'quantity' => $cartProduct->quantity,
             'priceSum' => $cartProduct->getPriceSum(),
-            'totalSum' => $user->cart->getTotal(),
-            'quantitySum' => $user->cart->getSum(),
+            'totalSum' => $cartProduct->cart->getTotal(),
+            'quantitySum' => $cartProduct->cart->getSum(),
         ]);
     }
 
@@ -52,8 +53,8 @@ class CartController extends Controller
         return json_encode([
             'quantity' => $cartProduct->quantity,
             'priceSum' => $cartProduct->getPriceSum(),
-            'totalSum' => $user->cart->getTotal(),
-            'quantitySum' => $user->cart->getSum(),
+            'totalSum' => $cartProduct->cart->getTotal(),
+            'quantitySum' => $cartProduct->cart->getSum(),
         ]);
     }
 }
