@@ -21,7 +21,7 @@ class CartController extends Controller
     public function cart(): Factory|View|Application
     {
         $user = Auth::user();
-        $cart = $user->cart()->first();
+        $cart = $user->cart()->firstOrCreate(['user_id' => $user->id]);
         $cartProducts = CartProduct::get()->where('cart_id', $cart->id);
         return view('cart', compact('cartProducts', 'cart'));
     }

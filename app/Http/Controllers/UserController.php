@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\SignInRequest;
 use App\Http\Requests\SignUpRequest;
+use App\Jobs\SendEmailJob;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -27,8 +29,9 @@ class UserController extends Controller
             'email' =>$request->email,
             'password' =>Hash::make($request->password),
         ]);
+        SendEmailJob::dispatch($user)->onQueue('default');
         Auth::login($user);
-        return redirect()->route('home');
+        return redirect()->route('verification.notice');
     }
 
     public function signin()

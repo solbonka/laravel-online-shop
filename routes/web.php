@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\MainController;
+use App\Http\Controllers\SendController;
 use App\Http\Controllers\UserController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,7 +33,7 @@ Route::middleware('guest')->group(function(){
     });
 });
 
-Route::middleware('auth')->group(function(){
+Route::middleware(['auth','verified'])->group(function(){
     Route::controller(MainController::class)->group(function() {
         Route::get('/home', 'main')->name('home');
         Route::get('/category/{categoryId}', 'category')->name('{categoryId}');
@@ -41,3 +44,11 @@ Route::middleware('auth')->group(function(){
         Route::post('/remove', 'remove')->name('remove');
     });
 });
+
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/home');
+})->middleware(['auth', 'signed'])->name('verification.verify');
