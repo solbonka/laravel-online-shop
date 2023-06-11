@@ -2,10 +2,9 @@
 
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\MainController;
-use App\Http\Controllers\SendController;
 use App\Http\Controllers\UserController;
+use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -50,5 +49,5 @@ Route::get('/email/verify', function () {
 })->middleware('auth')->name('verification.notice');
 Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
     $request->fulfill();
-    return redirect('/home');
+    return redirect()->intended(RouteServiceProvider::HOME);
 })->middleware(['auth', 'signed'])->name('verification.verify');

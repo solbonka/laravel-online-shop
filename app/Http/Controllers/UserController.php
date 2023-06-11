@@ -7,7 +7,10 @@ use App\Http\Requests\SignUpRequest;
 use App\Jobs\SendEmailJob;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
-use Illuminate\Auth\Events\Registered;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
@@ -20,7 +23,11 @@ class UserController extends Controller
         return view('signup');
     }
 
-    public function postSignUp(SignUpRequest $request)
+    /**
+     * @param SignUpRequest $request
+     * @return RedirectResponse
+     */
+    public function postSignUp(SignUpRequest $request): RedirectResponse
     {
         $user = User::create([
             'lastname' =>$request->lastname,
@@ -34,7 +41,10 @@ class UserController extends Controller
         return redirect()->route('verification.notice');
     }
 
-    public function signin()
+    /**
+     * @return Factory|View|Application
+     */
+    public function signin(): Factory|View|Application
     {
         return view('signin');
     }
@@ -42,7 +52,7 @@ class UserController extends Controller
     /**
      * @throws ValidationException
      */
-    public function postSignIn(SignInRequest $request)
+    public function postSignIn(SignInRequest $request): RedirectResponse
     {
         if (!Auth::attempt($request->validated())) {
             throw ValidationException::withMessages([

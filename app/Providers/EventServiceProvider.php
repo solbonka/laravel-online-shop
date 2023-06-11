@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Listeners\LogVerifiedUser;
 use App\Events\CartProductSavingEvent;
 use App\Listeners\DeleteCartProductListener;
 use Illuminate\Auth\Events\Registered;
@@ -23,9 +22,6 @@ class EventServiceProvider extends ServiceProvider
         ],
         CartProductSavingEvent::class => [
             DeleteCartProductListener::class,
-        ],
-        Verified::class => [
-            LogVerifiedUser::class,
         ],
     ];
 

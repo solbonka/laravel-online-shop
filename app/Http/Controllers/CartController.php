@@ -42,7 +42,7 @@ class CartController extends Controller
         ]);
     }
 
-    public function remove(ProductRequest $request): bool|string
+    public function remove(ProductRequest $request): string
     {
         $user = Auth::user();
 
