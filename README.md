@@ -6,19 +6,19 @@
 <h2> Чтобы запустить проект, выполните следующие шаги: </h2>
 <ul>
 
-- Создайте контейнеры: docker-compose build
+- Создайте контейнеры: <b>docker-compose build</b>
 
-- Запустите их: docker-compose up -d
+- Запустите их: <b>docker-compose up -d</b>
 
-- Проверьте созданные docker-контейнеры: docker-compose ps -a
+- Проверьте созданные docker-контейнеры: <b>docker-compose ps -a</b>
 
-- Зайдите в контейнер php-fpm: docker-compose exec php-fpm bash
+- Зайдите в контейнер php-fpm: <b>docker-compose exec php-fpm bash</b>
 
-- Установите необходимые библиотеки: composer install 
+- Установите необходимые библиотеки: <b>composer install </b>
 
-- Создать таблицы users, categories, products, carts, cart_products и jobs: php artisan migrate
+- Создать таблицы users, categories, products, carts, cart_products и jobs: <b>php artisan migrate</b>
 
-- Запустить обработчик событий: php artisan queue:work
+- Запустить обработчик событий: <b>php artisan queue:work</b>
 
 Готово
 </ul>
