@@ -9,6 +9,8 @@ use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Support\Facades\Auth;
+use Throwable;
+
 class CartController extends Controller
 {
     private CartService $cartService;
@@ -26,6 +28,9 @@ class CartController extends Controller
         return view('cart', compact('cartProducts', 'cart'));
     }
 
+    /**
+     * @throws Throwable
+     */
     public function add(ProductRequest $request): string
     {
         $user = Auth::user();
