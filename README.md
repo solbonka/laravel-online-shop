@@ -14,9 +14,11 @@
 
 - Зайдите в контейнер php-fpm: docker-compose exec php-fpm bash
 
-- создать таблицы users, categories, products, carts, cart_products и jobs: php artisan migrate
+- Установите необходимые библиотеки: composer install 
 
-- запустить обработчик событий: php artisan queue:work
+- Создать таблицы users, categories, products, carts, cart_products и jobs: php artisan migrate
+
+- Запустить обработчик событий: php artisan queue:work
 
 Готово
 </ul>
